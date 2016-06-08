@@ -27,7 +27,7 @@ body {
     background: #eee;
 }
 .navbar-brand img {
-    height: 100%;
+    height: 20px;
     float: left;
 }
 .bg-white {
