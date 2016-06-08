@@ -1,0 +1,49 @@
+[
+    {
+        "Title": "Project 1",
+        "Thumbnail": "img/geometric.png",
+        "Description": "This is the description",
+        "Type": "Image",
+        "Gallery": [
+            {
+                "Image": "img/geometric.png",
+                "Caption": "Caption text here"
+            },
+            {
+                "Image": "img/geometric.png",
+                "Caption": "Caption text here"
+            }
+        ],
+        "Category": "Design",
+        "Tags": [
+            {
+                "Tag": "Tag1"
+            },
+            {
+                "Tag": "Tag2"
+            }
+        ]
+    },
+    {
+        "Title": "Project 2",
+        "Image": "img/default.jpg",
+        "Description": "This is the description",
+        "Type": "Image",
+        "Gallery": [
+            {
+                "Image": "img/geometric.png",
+                "Caption": "Caption text here"
+            },
+            {
+                "Image": "img/geometric.png",
+                "Caption": "Caption text here"
+            }
+        ],
+        "Category": "Development",
+        "Tags": [
+            {
+                "Tag": "Tag1"
+            }
+        ]
+    }
+]

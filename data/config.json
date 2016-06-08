@@ -1,0 +1,39 @@
+{
+    "Name": "Antonio DiFranco",
+    "Title": "Application Developer",
+    "Description": "HTML5, Angular, jQuery, php, C#, ASP.NET, WPF, WebAPI 2.0, WordPress, Apex",
+    "ContactButton": "mailto:antonio@difranco.us?subject=Web Inquiry",
+    "Contact": [
+        {
+            "Type": "Email",
+            "Icon": "fa-paper-plane",
+            "Link": "mailto:antonio@difranco.us"
+        },
+        {
+            "Type": "Phone",
+            "Icon": "fa-phone",
+            "Link": "tel:352.318.8870"
+        },
+        {
+            "Type": "Facebook",
+            "Icon": "fa-facebook",
+            "Link": "http://www.facebook.com/antonio.difranco"
+        },
+        {
+            "Type": "Twitter",
+            "Icon": "fa-twitter",
+            "Link": "http://twitter.com/antoniodifranco"
+        },
+        {
+            "Type": "LinkedIn",
+            "Icon": "fa-linkedin",
+            "Link": "http://www.linkedin.com/in/antoniodifranco"
+        }
+    ],
+    "Branding": {
+        "Logo": "img/logo.png",
+        "Background-color": "rgba(150,200,200,.7)",
+        "Background-image": "img/geometric.png",
+        "Copyright": "2016 Antonio DiFranco. Application Development, Gainesville, FL"
+    }
+}
