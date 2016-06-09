@@ -43,35 +43,18 @@
         ]
     },
     {
-        "Title": "Flycaster & Company Logo",
-        "Thumbnail": "img/portfolio/design/Logo-Flycaster-325x325.jpg",
-        "Description": "Logo for a marketing and strategy firm focused on the marine industry",
-        "Type": "Image",
-        "Gallery": [
-            {
-                "Image": "img/portfolio/design/Logo-Flycaster.jpg",
-                "Caption": "Illustrated to depict principle"
-            }
-        ],
-        "Category": "Design",
-        "Tags": [
-            {
-                "Tag": "Logo"
-            },
-            {
-                "Tag": "Illustration"
-            }
-        ]
-    },
-    {
-        "Title": "Cade Prize Logo",
+        "Title": "Logos",
         "Thumbnail": "img/portfolio/design/Logo-CadePrize11-325x325.jpg",
-        "Description": "Logo inaugural Cade Prize",
+        "Description": "",
         "Type": "Image",
         "Gallery": [
             {
                 "Image": "img/portfolio/design/Logo-CadePrize11.jpg",
-                "Caption": "Illustrated to show the growth of ideas"
+                "Caption": "Logo the inaugural Cade Prize"
+            },
+            {
+                "Image": "img/portfolio/design/Logo-Flycaster.jpg",
+                "Caption": "Logo for a marketing and strategy firm focused on the marine industry"
             }
         ],
         "Category": "Design",
