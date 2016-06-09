@@ -67,6 +67,7 @@
                   <div class="carousel-inner" role="listbox">
                     <div class="item" ng-repeat="slide in vm.selectedProject.Gallery" ng-class="{ 'active': !$index }">
                       <img ng-src="{{slide.Image}}" alt="{{slide.Caption}}">
+                      <p>{{slide.Caption}}</p>
                     </div>
                   </div>
                   <a class="left carousel-control" href="#Carousel" role="button" data-slide="prev">
