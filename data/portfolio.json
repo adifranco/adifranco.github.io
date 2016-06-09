@@ -1,22 +1,22 @@
 [
     {
         "Title": "Albemarle Boats T-Shirt",
-        "Thumbnail": "img/potrfolio/design/AB-T-ShirtBackLG-300x300.jpg",
+        "Thumbnail": "img/portfolio/design/AB-T-ShirtBackLG-300x300.jpg",
         "Description": "Designed for sale in their gear store",
         "Type": "Image",
         "Gallery": [
             {
-                "Image": "img/potrfolio/design/AB-T-ShirtBackLG-300x300.jpg",
+                "Image": "img/portfolio/design/AB-T-ShirtBackLG-300x300.jpg",
                 "Caption": "A design for the 4th of July"
             }
         ],
         "Category": "Design",
         "Tags": [
             {
-                "Tag": "Tag1"
+                "Tag": "T-Shirt"
             },
             {
-                "Tag": "Tag2"
+                "Tag": "Illustration"
             }
         ]
     },
