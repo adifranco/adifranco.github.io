@@ -57,7 +57,10 @@
                 <p>{{vm.selectedProject.Description}}</p>
               </div>
               <div class="modal-body">
-                <div ng-if="vm.selectedProject.Type == 'Image'" id="Carousel" class="carousel slide" data-ride="carousel">
+                <div ng-if="vm.selectedProject.Type == 'Image' && vm.selectedProject.Gallery.length == 1" class="gallery">
+                  <img ng-src="{{vm.selectedProject.Gallery[0].Image}}" alt="{{vm.selectedProject.Gallery[0].Caption}}">
+                </div>
+                <div ng-if="vm.selectedProject.Type == 'Image' && vm.selectedProject.Gallery.length > 1" id="Carousel" class="gallery carousel slide" data-ride="carousel">
                   <ol class="carousel-indicators">
                     <li ng-repeat="slide in vm.selectedProject.Gallery" data-target="#Carousel" data-slide-to="$index" ng-class="{ 'active': !$index }"></li>
                   </ol>
