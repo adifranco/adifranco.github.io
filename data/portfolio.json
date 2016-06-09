@@ -1,17 +1,13 @@
 [
     {
-        "Title": "Project 1",
-        "Thumbnail": "img/geometric.png",
-        "Description": "This is the description",
+        "Title": "Albemarle Boats T-Shirt",
+        "Thumbnail": "img/potrfolio/design/AB-T-ShirtBackLG-300x300.jpg",
+        "Description": "Designed for sale in their gear store",
         "Type": "Image",
         "Gallery": [
             {
-                "Image": "img/geometric.png",
-                "Caption": "Caption text here"
-            },
-            {
-                "Image": "img/geometric.png",
-                "Caption": "Caption text here"
+                "Image": "img/potrfolio/design/AB-T-ShirtBackLG-300x300.jpg",
+                "Caption": "A design for the 4th of July"
             }
         ],
         "Category": "Design",
