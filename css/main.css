@@ -35,7 +35,7 @@ body {
 }
 .jumbotron {
     position: relative;
-    background: url("img/light-sharp-edges.png") left top repeat;
+    background: url("../img/light-sharp-edges.png") left top repeat;
     overflow: hidden;
     color: #fff;
 }
