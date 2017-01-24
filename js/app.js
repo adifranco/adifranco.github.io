@@ -59,6 +59,8 @@
             vm.site = [];
             vm.categories = [];
             vm.postfolio = [];
+            vm.today = new Date();
+            vm.year = vm.today.getFullYear().toString();
             vm.selectedProject = {};
             vm.filter = '';         
             activate();
