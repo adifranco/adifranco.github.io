@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+    <!--[if IE 9 ]><html class="ie9" ng-app="musicApp" ng-controller="musicController as vm"><![endif]-->
+    <![if IE 9 ]><html ng-app="musicApp" ng-controller="musicController as vm"><![endif]>
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Music Appreciation</title>
+        
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+        <style>
+            body.md-default-theme {
+                margin: 0;
+                padding: 0;
+                font-size: 90%;
+            }
+            .container {
+                width: 100%;
+                margin: 0 auto;
+                max-width: 800px;
+                box-sizing: border-box;
+            }
+            .card {
+                border-radius: 4px;
+                margin: 16px 0;
+                -webkit-transition: 0.02s padding cubic-bezier(0.35, 0, 0.25, 1);
+                transition: 0.02s padding cubic-bezier(0.35, 0, 0.25, 1);
+                position: relative;
+                padding-bottom: 0;
+            }
+            .card md-toolbar {
+                border-radius: 3px 3px 0 0;
+                box-shadow: 0 1px rgba(255, 255, 255, 0.1);
+            }
+            md-select {
+                margin: 0;
+            }
+            md-card {
+                padding-bottom: 10px;
+                margin-bottom: 10px;
+            }
+
+            md-toolbar md-select.md-default-theme .md-select-value.md-select-placeholder, md-toolbar md-select .md-select-value.md-select-placeholder,
+            md-toolbar md-select.md-default-theme:not([disabled]):focus .md-select-value.md-select-placeholder, md-toolbar md-select:not([disabled]):focus .md-select-value.md-select-placeholder,
+            md-toolbar md-select.md-default-theme:not([disabled]):focus .md-select-value, md-toolbar md-select:not([disabled]):focus .md-select-value {
+                color: white;
+            }
+            md-dialog {
+                max-width: 500px;
+            }
+            .screen-is-small #fixed-top-bar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 80;
+                width: 100%;
+            }
+            .screen-is-small #fixed-bottom-bar {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                z-index: 80;
+                width: 100%;
+                padding: 8px;
+                background: #fff;
+                border-top: 1px solid #ccc;
+            }
+            .screen-is-small .container {
+                position: absolute;
+                top: 60px;
+                left: 0;
+                margin: 0px;
+                max-width: 100%;
+                padding-bottom: 70px;
+            }
+        </style>
+    </head>
+    <body class="md-default-theme" ng-class="{ 'screen-is-small' : vm.screenIsSmall }" ng-cloak="true">
+        <div class="container">
+            <div flex="grow">
+                <section layout="column" ng-class="{ 'card md-whiteframe-2dp' : !vm.screenIsSmall }">
+                    <md-toolbar id="fixed-top-bar" ng-class="{ 'md-tall' : !vm.screenIsSmall }">
+                        <h3 ng-if="!vm.screenIsSmall" style="padding-left: 15px;">MUL1010 Listening Examples</h3>
+                        <h2 class="md-toolbar-tools">
+                            <span>
+                                <md-select ng-model="vm.currentSection" 
+                                        placeholder="Select a section" 
+                                        md-on-close="vm.changeCohort(vm.cohort.Id)" 
+                                        class="md-no-underline">
+                                    <md-option ng-repeat="section in vm.music" 
+                                            ng-value="{{section}}">
+                                        {{section.Section}}
+                                    </md-option>
+                                </md-select>
+                            </span>
+                            <span flex="auto"></span>
+                            <span ng-if="vm.currentSection">Songs: <strong>{{vm.currentSection.hasOwnProperty('Songs') ? vm.currentSection.Songs.length : 0}}</strong></span>
+                        </h2>
+                    </md-toolbar>
+                    <md-content class="md-padding" ng-if="vm.currentSection">
+                        <md-card ng-repeat="song in vm.currentSection.Songs">
+                            <md-card-title>
+                                <md-card-title-text>
+                                    <span class="md-title">{{song.Title}}</span>
+                                    <span class="md-subhead">{{song.Composer}} <span ng-if="song.Date">({{song.Date}})</span></span>
+                                </md-card-title-text>
+                                
+                            </md-card-title>
+                            <md-card-content>
+                                <youtube ng-if="song.Link.indexOf('youtube') > -1" code="song.Link"></youtube>
+                                <youtube ng-if="song.Link2.indexOf('youtube') > -1" code="song.Link2" style="margin-top: 10px;"></youtube>
+                                <p><a href="{{song.Link}}" target="_Blank">Open in new window</a> <em></em></p>
+                            </md-card-content>
+                        </md-card>
+                    </md-content>
+                </section>
+            </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+        <script>
+            (function() {
+
+                'use strict';
+                
+                var App = angular.module('musicApp', ['ngMaterial']);
+
+                App.directive('youtube', function($sce) {
+                    return {
+                        restrict: 'EA',
+                        scope: { code:'=' },
+                        replace: true,
+                        template: '<div style="height:400px;"><iframe style="overflow:hidden;height:100%;width:100%" width="100%" height="100%" src="{{url}}" frameborder="0" allowfullscreen></iframe></div>',
+                        link: function (scope) {
+                            scope.$watch('code', function (newVal) {
+                            if (newVal) {
+                                if (newVal.indexOf('watch?v=') > -1) newVal = newVal.replace('watch?v=', 'embed/');
+                                scope.url = $sce.trustAsResourceUrl(newVal);
+                            }
+                            });
+                        }
+                    };
+                });
+                
+                App.controller('musicController', function ($q, $scope, $filter, $http, $mdMedia) {   
+                    
+                    var vm = this;
+                    
+                    vm.music = [];
+                    
+                    activate();
+                    
+                    function activate() {
+
+                        getMusic();
+
+                        $scope.$watch(function() { return !$mdMedia('gt-sm'); }, function(isSmall) {
+                            vm.screenIsSmall = isSmall;
+                        });
+                    }
+
+                    function getMusic() {
+                            
+                        vm.music = [
+                                    {
+                                        "Section": "Chapters 1-10",
+                                        "Songs": [
+                                            {
+                                                "Chapter": "4",
+                                                "Title": "O Pastor Animarum (Shepherd of Souls)",
+                                                "Composer": "Hildegard of Bingen",
+                                                "Date": "Ca. 1150",
+                                                "Link": "https://www.youtube.com/watch?v=taanHO13WXE"
+                                            },
+                                            {
+                                                "Chapter": "4",
+                                                "Title": "Viderunt omnes (All Have Seen) Beginning Section",
+                                                "Composer": "Leonin",
+                                                "Date": "1190-1225",
+                                                "Link": "https://www.youtube.com/watch?v=1OfO_ArdWEo"
+                                            },
+                                            {
+                                                "Chapter": "4",
+                                                "Title": "\"Agnus Dei\" (Lamb of God) from Messe De Notra Dame",
+                                                "Composer": "Marchaut",
+                                                "Date": "1300-1377",
+                                                "Link": "https://www.youtube.com/watch?v=bHRAYbgdxew"
+                                            },
+                                            {
+                                                "Chapter": "5",
+                                                "Title": "Ave Maria (Hail Mary)",
+                                                "Composer": "Josquin Des Prez",
+                                                "Date": "1450-1521",
+                                                "Link": "https://www.youtube.com/watch?v=1gWevhkubzU"
+                                            },
+                                            {
+                                                "Chapter": "5",
+                                                "Title": "Fair Phyllis",
+                                                "Composer": "John Farmer",
+                                                "Date": "",
+                                                "Link": "https://www.youtube.com/watch?v=ah8OtzZWiKk"
+                                            },
+                                            {
+                                                "Chapter": "6",
+                                                "Title": "\"Thy Hand Belinda & When I am Laid in Earth\" from Dido and Aeneas",
+                                                "Composer": "Henry Purcell",
+                                                "Date": "1659-1695",
+                                                "Link": "https://www.youtube.com/watch?v=ePdic5HLb-U"
+                                            },
+                                            {
+                                                "Chapter": "7",
+                                                "Title": "\"Wachet Auf\" (Sleepers Awake)  Cantata no. 140 4th Movement \"Zion Hears the Watchman\"",
+                                                "Composer": "J.S. Bach",
+                                                "Date": "1685-1750",
+                                                "Link": "https://www.youtube.com/watch?v=btF0qRNcSuc"
+                                            },
+                                            {
+                                                "Chapter": "8",
+                                                "Title": "Little Fugue in G Minor",
+                                                "Composer": "J.S. Bach",
+                                                "Date": "1685-1750",
+                                                "Link": "http://www.youtube.com/watch?v=PhRa3REdozw"
+                                            },
+                                            {
+                                                "Chapter": "9",
+                                                "Title": "\"Hallelujah Chorus\" from Messiah",
+                                                "Composer": "G.F Handel",
+                                                "Date": "1685-1759",
+                                                "Link": "https://www.youtube.com/watch?v=yKmP23BiDa0"
+                                            },
+                                            {
+                                                "Chapter": "10",
+                                                "Title": "\"Spring\" 1st Movement from The Four Seasons",
+                                                "Composer": "Antonio Vivaldi",
+                                                "Date": "",
+                                                "Link": "https://www.youtube.com/watch?v=TKthRw4KjEg"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Section": "Chapters 11-19",
+                                        "Songs": [
+                                            {
+                                                "Chapter": "11",
+                                                "Title": "Symphony No. 40 1st Movement",
+                                                "Composer": "Mozart",
+                                                "Date": "1756-1791",
+                                                "Link": "https://www.youtube.com/watch?v=mG0Fx-JtANs"
+                                            },
+                                            {
+                                                "Chapter": "11",
+                                                "Title": "Symphony No 94 2nd Movement",
+                                                "Composer": "Haydn",
+                                                "Date": "1732-1819",
+                                                "Link": "https://www.youtube.com/watch?v=lLjwkamp3lI"
+                                            },
+                                            {
+                                                "Chapter": "12",
+                                                "Title": "Mozart Piano Concerto No. 23 in A Major 1st Movement",
+                                                "Composer": "Mozart",
+                                                "Date": "1756-1791",
+                                                "Link": "https://www.youtube.com/watch?v=9vttZzUPg3A"
+                                            },
+                                            {
+                                                "Chapter": "13",
+                                                "Title": "\"The Bird\" String Quartet 4th Movement",
+                                                "Composer": "Haydn",
+                                                "Date": "1732-1819",
+                                                "Link": "https://www.youtube.com/watch?v=tj_CIdjyBNg"
+                                            },
+                                            {
+                                                "Chapter": "15",
+                                                "Title": "Symphony No. 5 in C Minor (Entire)",
+                                                "Composer": "Beethoven",
+                                                "Date": "1770-1827",
+                                                "Link": "https://www.youtube.com/watch?v=OGnBrabqdP4"
+                                            },
+                                            {
+                                                "Chapter": "16",
+                                                "Title": "Der Erlkonig",
+                                                "Composer": "Schubert",
+                                                "Date": "",
+                                                "Link": "https://www.youtube.com/watch?v=JS91p-vmSf0"
+                                            },
+                                            {
+                                                "Chapter": "17",
+                                                "Title": "Nocturne, Op. 9, No. 2",
+                                                "Composer": "Frederic Chopin",
+                                                "Date": "1810-1849",
+                                                "Link": "https://www.youtube.com/watch?v=YGRO05WcNDk"
+                                            },
+                                            {
+                                                "Chapter": "17",
+                                                "Title": "Transcendental Etude no. 10 in F Minor",
+                                                "Composer": "Franz Liszt",
+                                                "Date": "1811-1886",
+                                                "Link": "https://www.youtube.com/watch?v=Qt4sEqBlllU"
+                                            },
+                                            {
+                                                "Chapter": "19",
+                                                "Title": "The Moldau",
+                                                "Composer": "Smetana",
+                                                "Date": "1824-1884",
+                                                "Link": "https://www.youtube.com/watch?v=oOxIbhqZsKc"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Section": "Chapters 20-29",
+                                        "Songs": [
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Romeo and Juliet Overture",
+                                                "Composer": "Peter Ilyich Tchaikovsky",
+                                                "Date": "1840-1893",
+                                                "Link": "https://www.youtube.com/watch?v=Cxj8vSS2ELU"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Violin Concerto in E Minor, op. 64, 1st Movement",
+                                                "Composer": "Felix Mendelssohn",
+                                                "Date": "1809-1847",
+                                                "Link": "https://www.youtube.com/watch?v=FQOg0FfOWRA"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "From the New World Symphony, Symphony No. 9 in E Minor, 4th Movement",
+                                                "Composer": "Antonin Dvorak",
+                                                "Date": "1841-1904",
+                                                "Link": "https://www.youtube.com/watch?v=yctfXIqugXc"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Symphony no. 1 in D Major, 3rd Movement",
+                                                "Composer": "Gustav Mahler",
+                                                "Date": "1860-1911",
+                                                "Link": "https://www.youtube.com/watch?v=kbRyttzUzjI"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Si, mi chiamano Mimi (Yes They Call Me Mimi) from La Boheme",
+                                                "Composer": "Giacomo Puccini",
+                                                "Date": "1858-1924",
+                                                "Link": "https://www.youtube.com/watch?v=sCEu6xZAQ6o"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "\"Grane, mein Ross!\" and finale from Gotterdamerung from Der Ring des Nibelungen",
+                                                "Composer": "Richard Wagner",
+                                                "Date": "1813-1883",
+                                                "Link": "https://www.youtube.com/watch?v=Fwl6rc93NKE"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Prelude a L'apres-midi d 'un faune (Prelude to the Afternoon of a Faun)",
+                                                "Composer": "Claude Debussy",
+                                                "Date": "1862-1918",
+                                                "Link": "https://www.youtube.com/watch?v=bYyK922PsUw"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "La Sacre du Printemps (The Rite of Spring), introduction, \"Auguries of Spring-Dances of the Young Girls,\" and \"The Ritual of Abduction\"",
+                                                "Composer": "Igor Stravinsky",
+                                                "Date": "1882-1971",
+                                                "Link": "https://www.youtube.com/watch?v=jF1OQkHybEQ"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Concerto for Orchestra, 4th Movement, \"Interrupted Intermezzo\"",
+                                                "Composer": "Bela Bartok",
+                                                "Date": "1881-1945",
+                                                "Link": "https://www.youtube.com/watch?v=mfSOAo1ny7g"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Der Mondfleck (Moonfleck), no. 18 from Pierrot Lunaire (Moonstruck Pierrot)",
+                                                "Composer": "Arnold Schoenberg",
+                                                "Date": "1874-1951",
+                                                "Link": "https://www.youtube.com/watch?v=DPlG64VqRKA"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "Section": "Chapters 30-39",
+                                        "Songs": [
+                                            {
+                                                "Chapter": "",
+                                                "Title": "I Dream of Jeannie with the Light Brown Hair",
+                                                "Composer": "Stephen Foster",
+                                                "Date": "1826-1864",
+                                                "Link": "https://www.youtube.com/watch?v=gbQJISHT4ZU"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Maple Leaf Rag",
+                                                "Composer": "Scott Joplin",
+                                                "Date": "1868-1917",
+                                                "Link": "https://www.youtube.com/watch?v=-yCL8bsb_Ws"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Lost Your Head Blues",
+                                                "Composer": "Bessie Smith",
+                                                "Date": "1894-1937",
+                                                "Link": "https://www.youtube.com/watch?v=R1oKhVaKBRE"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "It Don't Mean A Thing",
+                                                "Composer": "Edward Kennedy (Duke Ellington)",
+                                                "Date": "1899-1984",
+                                                "Link": "https://www.youtube.com/watch?v=qDQpZT3GhDg"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "KoKo",
+                                                "Composer": "Charlie Parker",
+                                                "Date": "1920-1955",
+                                                "Link": "https://www.youtube.com/watch?v=4rMiD8UUcd0"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Miles Runs the Voodoo Down",
+                                                "Composer": "Miles Davis",
+                                                "Date": "1926-1991",
+                                                "Link": "https://www.youtube.com/watch?v=YLUJZUKJ1BM"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Rhapsody in Blue",
+                                                "Composer": "George Gershwin",
+                                                "Date": "1898-1937",
+                                                "Link": "https://www.youtube.com/watch?v=ZmUHI2yTtVY",
+                                                "Link2": "https://www.youtube.com/watch?v=ruV0qfhEoWU"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Afro-American Symphony 1st Movement",
+                                                "Composer": "William Grant Still",
+                                                "Date": "1895-1978",
+                                                "Link": "https://www.youtube.com/watch?v=rtHraS7q6hg"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "The Unanswered Question",
+                                                "Composer": "Charles Ives",
+                                                "Date": "1874-1954",
+                                                "Link": "https://www.youtube.com/watch?v=kkaOz48cq2g"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Fanfare for The Common Man",
+                                                "Composer": "Aaron Copland",
+                                                "Date": "1900-1990",
+                                                "Link": "https://www.youtube.com/watch?v=ZdqjcMmjeaA"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Symphony No. 1, First Movement",
+                                                "Composer": "Ellen Taaffe Zwilich",
+                                                "Date": "b. 1939",
+                                                "Link": "https://www.youtube.com/watch?v=_6PjvR-IKWM"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "\"America\" from West Side Story - Start @ 2:19",
+                                                "Composer": "Leonard Bernstein",
+                                                "Date": "1918-1990",
+                                                "Link": "https://www.youtube.com/watch?v=4B1IjqiMQJ0"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Star Wars Main Title",
+                                                "Composer": "John Williams",
+                                                "Date": "b. 1932",
+                                                "Link": "https://www.youtube.com/watch?v=_D0ZQPqeJkk"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Gamelan Orchestra",
+                                                "Composer": "",
+                                                "Date": "",
+                                                "Link": "https://www.youtube.com/watch?v=sZZTfu4jWcI"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Moonlight on the Ching Yang River",
+                                                "Composer": "The Chinese Cultural Theater Group",
+                                                "Date": "",
+                                                "Link": "https://www.youtube.com/watch?v=7-KeXSHZwxw"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Erhu - Spring Scenery in South of Yangtze River",
+                                                "Composer": "Performed by Yu Hongmei",
+                                                "Date": "",
+                                                "Link": "https://www.youtube.com/watch?v=6kmLxZkT6y8"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Indian Ragas",
+                                                "Composer": "Played by Ravi Shankar and his Daughter Anoushka Shankar",
+                                                "Date": "",
+                                                "Link": "https://www.youtube.com/watch?v=9xB_X9BOAOU"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "The Banshee",
+                                                "Composer": "Henry Cowell",
+                                                "Date": "1897-1965",
+                                                "Link": "https://www.youtube.com/watch?v=ND-ga_BrkCE"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Sonata V from Sonatas and Interludes for Prepared Piano",
+                                                "Composer": "John Cage",
+                                                "Date": "1912-1992",
+                                                "Link": "https://www.youtube.com/watch?v=VYsx5Di3bso"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Poème électronique",
+                                                "Composer": "Edgard Varèse",
+                                                "Date": "1883-1965",
+                                                "Link": "https://www.youtube.com/watch?v=R-R3F3ZVbi8"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "In C",
+                                                "Composer": "Terry Riley",
+                                                "Date": "b. 1935",
+                                                "Link": "https://www.youtube.com/watch?v=yNi0bukYRnA"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Company 2nd Movement",
+                                                "Composer": "Philip Glass",
+                                                "Date": "b. 1937",
+                                                "Link": "https://www.youtube.com/watch?v=wjpWivPphsA"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "Electronic Counter Point 3rd Movement",
+                                                "Composer": "Steve Reich",
+                                                "Date": "b. 1936",
+                                                "Link": "http://www.youtube.com/watch?v=NmWgIidnXX4"
+                                            },
+                                            {
+                                                "Chapter": "",
+                                                "Title": "A Short Ride in a Fast Machine",
+                                                "Composer": "John Adams",
+                                                "Date": "b. 1937",
+                                                "Link": "http://www.youtube.com/watch?v=4YoOkPFnm3k"
+                                            }
+                                        ]
+                                    }
+                                ];
+                    }
+
+                });
+
+            })();
+        </script>
+    </body>
+</html>
